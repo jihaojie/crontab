@@ -1,0 +1,195 @@
+{{define "db-info.html"}}
+
+    {{template "header" .}}
+
+
+    <div class="layui-body" style="background-color: #f0f3f4;">
+        <!-- 内容主体区域 -->
+
+        {{/*        {{.cronJobList}}*/}}
+        <div style="margin: 15px;background-color: white;">
+            <div style="padding: 15px;">
+                <div>
+                    <button type="button" class="layui-btn"
+                            onclick="Addjob()">添加
+                    </button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <table id="myTable" class="table  table-bordered">
+                        <thead>
+                        <tr>
+                            {{/*                            <th style="width: 80px">选择</th>*/}}
+                            <th>数据库名称</th>
+                            <th>角色</th>
+                            <th>主机名</th>
+                            <th>IP</th>
+                            <th>端口</th>
+                            <th>业务名</th>
+                            <th>详细</th>
+
+                        </tr>
+                        </thead>
+                        <tbody id="myTableBody">
+                        {{range .}}
+
+                        {{end}}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+
+    </div>
+
+    <!-- Modal -->
+    <div id="AddModal">
+        <div>
+            <div style="margin-top: 20px;">
+                <label class="layui-form-label">名称:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="AddJobName" class="layui-input" placeholder="请输入任务名称">
+                </div>
+            </div>
+            <div style="margin-top: 20px">
+                <label class="layui-form-label">表达式:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="AddMyExpr" placeholder="请输入Crontab表达式 秒年分时日月周"
+                           class="layui-input">
+                </div>
+            </div>
+            {{/*            <div style="margin-top: 20px">*/}}
+            {{/*                <label class="layui-form-label">命令:</label>*/}}
+            {{/*                <div class="layui-input-block" style="width: 70%">*/}}
+            {{/*                    <input type="text" id="AddShellcmd" placeholder="请输入shell命令"*/}}
+            {{/*                           class="layui-input">*/}}
+            {{/*                </div>*/}}
+            {{/*            </div>*/}}
+
+            <div style="margin-top: 20px">
+                <label class="layui-form-label">命令:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="AddShellcmd" placeholder="请输入shell命令"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div style="margin-top: 20px">
+                <label class="layui-form-label">状态:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <select class="form-control" id="AddStatus">
+                        <option value="true">启用</option>
+                        <option value="false">禁用</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div style="margin-top: 50px;margin-left: 35%">
+                <button class="layui-btn" onclick="PostjobForm()">立即提交</button>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+    <div id="AuditModal">
+        <div>
+            <div style="margin-top: 20px;">
+                <label class="layui-form-label">名称:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="AuditJobName" lay-verify="jobname" placeholder="请输入任务名称" readonly="readonly"
+                           class="layui-input">
+                </div>
+            </div>
+            <div style="margin-top: 20px">
+                <label class="layui-form-label">表达式:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="AuditMyExpr" lay-verify="myexpr" placeholder="请输入Crontab表达式 秒年分时日月周"
+                           class="layui-input">
+                </div>
+            </div>
+            <div style="margin-top: 20px">
+                <label class="layui-form-label">命令:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="AuditShellcmd" lay-verify="shellcmd" placeholder="请输入shell命令"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div style="margin-top: 20px">
+                <label class="layui-form-label">状态:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <select class="form-control" id="AuditStatus">
+                        <option value="true">启用</option>
+                        <option value="false">禁用</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top: 50px;margin-left: 35%">
+                <button class="layui-btn" onclick="UpdatejobForm()">立即提交</button>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <div id="LogModal">
+        <div>
+            <div style="margin-top: 20px;">
+                <label class="layui-form-label">名称:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="LogJobName" lay-verify="jobname" readonly="readonly"
+                           class="layui-input">
+                </div>
+            </div>
+            <div style="margin-top: 20px;">
+                <label class="layui-form-label">时间:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="LogTime" lay-verify="jobname" readonly="readonly"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label class="layui-form-label">日志:</label>
+                <div class="layui-input-block" style="width: 70%">
+                   <pre id="ExecuteResults" style="min-height: 100px;">
+                    </pre>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        {{/*        © layui.com - 底部固定区域*/}}
+    </div>
+
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/layui/layui.all.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
+
+
+{{end}}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+</head>
+<body>
+
+<!--<link rel="stylesheet" type="text/css" href="./bootstrap.min.css">-->
+<link rel="stylesheet" href="/static/layui/css/layui.css">
+<link rel="stylesheet" href="/static/layui/css/admin.css">
+<link rel="stylesheet" href="/static/layui/css/login.css">
+
+<div id="app">
+
+    <div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="">
+        <form action="/account/login" method="POST">
+            <div class="layadmin-user-login-main">
+                <div class="layadmin-user-login-box layadmin-user-login-header">
+                    <h2>定时任务系统</h2>
+                </div>
+                <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+                    <div class="layui-form-item">
+                        <label class="layadmin-user-login-icon layui-icon layui-icon-username"
+                               for="LAY-user-login-username"></label>
+                        <input type="text" name="username" id="LAY-user-login-username" lay-verify="required"
+                               placeholder="用户名" class="layui-input">
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layadmin-user-login-icon layui-icon layui-icon-password"
+                               for="LAY-user-login-password"></label>
+                        <input type="password" name="password" id="LAY-user-login-password" lay-verify="required"
+                               placeholder="密码" class="layui-input">
+                    </div>
+                    <div class="layui-form-item">
+                        <button class="layui-btn layui-btn-fluid" type="submit" lay-submit=""
+                                lay-filter="LAY-user-login-submit">登 入
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+
+</div>
+
+
+</body>
+
+<script src="/static/layui/layui.js"></script>
+<script
+        src="https://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+
+<script>
+
+
+
+</script>
+</html>
+

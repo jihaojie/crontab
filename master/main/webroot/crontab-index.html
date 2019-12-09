@@ -1,0 +1,420 @@
+{{define "crontab-index.html"}}
+
+    {{template "header" .}}
+
+
+    <div class="layui-body" style="background-color: #f0f3f4;">
+        <!-- 内容主体区域 -->
+
+        <div style="margin: 15px;background-color: white;">
+            <div style="padding: 15px;">
+                <div>
+                    <button type="button" class="layui-btn"
+                            onclick="AlertSaveJob()">添加
+                    </button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <table id="myTable" class="table  table-bordered">
+                        <thead>
+                        <tr>
+                            {{/*                            <th style="width: 80px">选择</th>*/}}
+                            <th>任务名称</th>
+                            <th>命令</th>
+                            <th>Crontab表达式</th>
+                            {{/*                            <th>状态</th>*/}}
+                            <th>操作</th>
+
+                        </tr>
+                        </thead>
+                        <tbody id="myTableBody">
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    </div> <!-- 这个div不能少 -->
+
+
+    <!-- Modal -->
+    <div id="SaveModal">
+        <div>
+            <div style="margin-top: 20px;">
+                <label class="layui-form-label">名称:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="jobName" class="layui-input" placeholder="请输入任务名称">
+                </div>
+            </div>
+            <div style="margin-top: 20px">
+                <label class="layui-form-label">表达式:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="cronExpr" placeholder="请输入Crontab表达式 秒年分时日月周"
+                           class="layui-input">
+                </div>
+            </div>
+            {{/*            <div style="margin-top: 20px">*/}}
+            {{/*                <label class="layui-form-label">命令:</label>*/}}
+            {{/*                <div class="layui-input-block" style="width: 70%">*/}}
+            {{/*                    <input type="text" id="AddShellcmd" placeholder="请输入shell命令"*/}}
+            {{/*                           class="layui-input">*/}}
+            {{/*                </div>*/}}
+            {{/*            </div>*/}}
+
+            <div style="margin-top: 20px">
+                <label class="layui-form-label">命令:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="command" placeholder="请输入shell命令"
+                           class="layui-input">
+                </div>
+            </div>
+
+            {{/*            <div style="margin-top: 20px">*/}}
+            {{/*                <label class="layui-form-label">状态:</label>*/}}
+            {{/*                <div class="layui-input-block" style="width: 70%">*/}}
+            {{/*                    <select class="form-control" id="AddStatus">*/}}
+            {{/*                        <option value="true">启用</option>*/}}
+            {{/*                        <option value="false">禁用</option>*/}}
+            {{/*                    </select>*/}}
+            {{/*                </div>*/}}
+            {{/*            </div>*/}}
+
+
+            <div style="margin-top: 50px;margin-left: 35%">
+                <button class="layui-btn" onclick="SaveJob()">立即提交</button>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div id="AddModal">
+        <div>
+            <div style="margin-top: 20px;">
+                <label class="layui-form-label">名称:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="AddJobName" class="layui-input" placeholder="请输入任务名称">
+                </div>
+            </div>
+            <div style="margin-top: 20px">
+                <label class="layui-form-label">表达式:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="AddMyExpr" placeholder="请输入Crontab表达式 秒年分时日月周"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div style="margin-top: 20px">
+                <label class="layui-form-label">命令:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <input type="text" id="AddShellcmd" placeholder="请输入shell命令"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div style="margin-top: 20px">
+                <label class="layui-form-label">状态:</label>
+                <div class="layui-input-block" style="width: 70%">
+                    <select class="form-control" id="AddStatus">
+                        <option value="true">启用</option>
+                        <option value="false">禁用</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div style="margin-top: 50px;margin-left: 35%">
+                <button class="layui-btn" onclick="PostjobForm()">立即提交</button>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        {{/*        © layui.com - 底部固定区域*/}}
+    </div>
+
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/layui/layui.all.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
+
+
+
+    <script>
+        //JavaScript代码区域
+
+
+        $(document).ready(function () {
+
+            Getjoblist();
+
+            layui.use('element', function () {
+                var element = layui.element;
+
+            });
+
+
+        });
+
+
+        function AlertSaveJob() {
+            $("#jobName").removeAttr("readonly");
+            $("#jobName").val("");
+            $("#command").val("");
+            $("#cronExpr").val("");
+
+            layer.open({
+                type: 1,
+                title: "添加任务",
+                area: ['500px', '400px'], //宽高
+                shadeClose: true,
+                content: $('#SaveModal')
+            });
+
+
+        }
+
+
+        function AskUpdate(ths) {
+            //本质上跟save 用同一个接口
+            layer.open({
+                type: 1,
+                title: "添加任务",
+                area: ['500px', '400px'], //宽高
+                shadeClose: true,
+                content: $('#SaveModal')
+            });
+
+            var jobName = $(ths).parent().siblings(".name").text();
+            var command = $(ths).parent().siblings(".command").text();
+            var cronExpr = $(ths).parent().siblings(".cronExpr").text();
+
+            $("#jobName").val(jobName);
+            $("#jobName").attr("readonly", "readonly");
+            $("#command").val(command);
+            $("#cronExpr").val(cronExpr);
+
+        }
+
+
+        function Getjoblist() {
+
+            var url = "/job/list";
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                tradition: true,
+                success: function (callback) {
+                    // json.loads
+                    //layer.close(ii);
+                    console.log(callback);
+                    var dataList = callback.data;
+                    // console.log(dataList)
+                    for (i = 0; i < dataList.length; i++) {
+                        var tr = $('#myTableBody').append("<tr>" +
+                            "<td class='name'>" + dataList[i].name + "</td>" + "<td class='command'>" + dataList[i].command +
+                            "<td class='cronExpr'>" + dataList[i].cronExpr + "</td>" +
+                            // "<td class='status '>" + callback[i].Status + "</td>" +
+                            "</td>" + "<td>" +
+                            "<button onclick='AskUpdate(this)' class=\"layui-btn layui-btn-sm layui-btn-info\">编辑</button>" +
+                            // "<button onclick='AskSuspend(this)' class=\"layui-btn layui-btn-sm layui-btn-warm\">暂停</button>" +
+                            "<button onclick='AskKill(this)' class=\"layui-btn layui-btn-sm layui-btn-warm\">强杀</button>" +
+                            "<button onclick='AskDel(this)' class=\"layui-btn layui-btn-sm layui-btn-danger\">删除</button>" +
+                            "<button onclick='GetLog(this)' class=\"layui-btn layui-btn-sm layui-btn-normal\">日志</button>" +
+                            "</td>" +
+                            "</tr>")
+
+
+                    }
+
+                    $('#myTable').DataTable(); // 初始化表格
+
+
+                }
+            });
+        }
+
+
+        function SaveJob() {
+
+            var jobName = $("#jobName").val();
+            var command = $("#command").val();
+            var cronExpr = $("#cronExpr").val();
+            // var status = $("#AddStatus").val();
+            var jobInfo = {"name": jobName, "command": command, "cronExpr": cronExpr};
+            $.ajax({
+                url: "/job/save",
+                type: 'POST',
+                tradition: true,
+                // dataType: JSON,
+                data: {job: JSON.stringify(jobInfo)},
+                success: function (callback) {
+                    // json.loads
+                    //layer.close(ii);
+                    console.log(callback);
+                    // console.log("123")
+                    if (callback.errno == 0) {
+                        //添加成功 刷新页面
+                        layer.msg('操作成功', {icon: 1});
+                        setTimeout("window.location.reload()", 2000);
+                    } else {
+                        layer.msg(callback.msg, {icon: 2});
+                    }
+
+                }
+            });
+        }
+
+        function UpdatejobForm() {
+
+            var jobname = $("#AuditJobName").val();
+            var shellcmd = $("#AuditShellcmd").val();
+            var myexpr = $("#AuditMyExpr").val();
+            var status = $("#AuditStatus").val();
+
+            // console.log(jobname, shellcmd, myexpr);
+
+            $.ajax({
+                url: "/crontab/create/",
+                type: 'POST',
+                tradition: true,
+                data: {jobname: jobname, shellcmd: shellcmd, myexpr: myexpr, status: status},
+                success: function (callback) {
+                    // json.loads
+                    //layer.close(ii);
+                    // console.log(callback);
+                    // console.log("123")
+                    if (callback.code == 0) {
+                        //添加成功 刷新页面
+                        layer.msg('操作成功', {icon: 1});
+                        setTimeout("window.location.reload()", 2000);
+                    } else {
+                        layer.msg(callback.msg, {icon: 2});
+                    }
+
+                }
+            });
+        }
+
+
+        function AskDel(ths) {
+
+            layer.confirm('确定要删除吗？', {
+                btn: ['删除', '取消'] //按钮
+            }, function () {
+
+                DeleteJob(ths)
+
+            }, function () {
+                layer.msg('已取消',);
+            });
+
+        }
+
+        function DeleteJob(ths) {
+            var jobName = $(ths).parent().siblings(".name").text();
+
+            $.ajax({
+                url: "/job/delete",
+                type: 'POST',
+                tradition: true,
+                // dataType:JSON,
+                data: {name: jobName},
+                success: function (callback) {
+                    // json.loads
+                    //layer.close(ii);
+                    console.log(callback);
+                    // console.log("123")
+                    if (callback.errno == 0) {
+                        //添加成功 刷新页面
+                        layer.msg('操作成功', {icon: 1});
+                        setTimeout("window.location.reload()", 2000);
+                    } else {
+                        layer.msg(callback.msg, {icon: 2});
+                    }
+
+                }
+            });
+
+        }
+
+        function AskKill(ths) {
+            layer.confirm('确定要强杀吗？', {
+                btn: ['删除', '取消'] //按钮
+            }, function () {
+
+                KillJob(ths)
+
+            }, function () {
+                layer.msg('已取消',);
+            });
+        }
+
+        function KillJob(ths) {
+
+            var jobName = $(ths).parent().siblings(".name").text();
+
+            $.ajax({
+                url: "/job/kill",
+                type: 'POST',
+                tradition: true,
+                // dataType:JSON,
+                data: {name: jobName},
+                success: function (callback) {
+                    // json.loads
+                    //layer.close(ii);
+                    console.log(callback);
+                    // console.log("123")
+                    if (callback.errno == 0) {
+                        //添加成功 刷新页面
+                        layer.msg('操作成功', {icon: 1});
+                        setTimeout("window.location.reload()", 2000);
+                    } else {
+                        layer.msg(callback.msg, {icon: 2});
+                    }
+
+                }
+            });
+
+
+        }
+
+        function Audit(ths) {
+            var jobname = $(ths).parent().siblings(".jobname").text();
+            var shellcmd = $(ths).parent().siblings(".shellcmd").text();
+            var myexpr = $(ths).parent().siblings(".myexpr").text();
+
+            $('#AuditJobName').val(jobname);
+            $('#AuditShellcmd').val(shellcmd);
+            $('#AuditMyExpr').val(myexpr);
+
+            layer.open({
+                type: 1,
+                title: "编辑任务",
+                area: ['500px', '400px'], //宽高
+                shadeClose: true,
+                content: $('#AuditModal')
+            });
+
+        }
+
+
+    </script>
+    </body>
+
+
+{{end}}
